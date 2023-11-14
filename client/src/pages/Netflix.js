@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { FaPlay } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import TopNav from "../components/TopNav";
 import Card from "../components/Card";
+import { fetchMovie, getGenres } from "../store";
+import SliderContainer from "../components/SliderContainer";
 
 const Netflix = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +17,20 @@ const Netflix = () => {
     return () => (window.onscroll = null);
   };
   const navigate = useNavigate();
+
+  const movies = useSelector((state) => state.netflix.movie);
+  const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getGenres());
+  });
+  useEffect(() => {
+    if (genresLoaded) {
+      dispatch(fetchMovie({ type: "all" }));
+    }
+  });
+
   return (
     <HeroContainer>
       <div className="hero">
@@ -37,7 +54,7 @@ const Netflix = () => {
           </div>
         </div>
       </div>
-      <Card />
+      <SliderContainer movies={movies} />
     </HeroContainer>
   );
 };
